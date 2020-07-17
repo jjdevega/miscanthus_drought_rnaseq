@@ -1,0 +1,788 @@
+---
+title: "Transcriptional response to drought stress among bioenergy grass Miscanthus spp."
+subtitle: "Four Miscanthus species were included in this RNASeq study, each species with three biological replicates, under three treatment conditions (control, saturated, drought) in the greenhouse"
+author: "Jose J. De Vega, Abel Teshome, Manfred Klaas, John Finnan, Jim Grant, Susanne Barth"
+date: "11th May 2020"
+output: html_document
+html_document:
+toc: true
+number_sections: true
+
+theme: united
+highlight: tango
+df_print: paged
+
+knit: (function(input_file, encoding) {
+  out_dir <- '.';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+---
+
+
+# Summary 
+
+**Miscanthus is a commercial lignocellulosic biomass crop owing to its high biomass productivityMiscanthus species are known for their high biomass yield and hence are potential candidates as bio-energy crop, particularly in the temperate regions. Thise present study was conducted to elucidate the physiological and molecular response of in miscanthus Miscanthus genotypes when subjected to well-watered and droughted greenhouse conditions. A significant biomass loss was observed under drought conditions for all genotypes. Among the species, a A sterile hybrid, M. x giganteus hybrid, gave the highestshowed a lower reduction in biomass yield under drought conditions compared to the control. Unexpectedly, biomass yield uUnder well-watered conditions, biomass yield was as good or better than control treatment conditions in all species . tested. M. sinensis was more tolerant than M. sacchariflorus in both water stress conditions. In comparative transcriptomics, a total of 67789 transcripts/unigenes were queried among the species.  Among those, nearly 3% transcripts 4,389 of the 67,789 genes (6.4%) in the reference genome exhibited were signiﬁcantly differential differentially expressed expression within and among all  four Miscanthus species during drought conditions. Most of the genes were differentially expressed in a single species, but the . 16 of those differentially expressed genes (DEGs) were shared among all Miscanthus species. Geneenrichment analysis of gene ontology (GO) terms enrichment analysis revealed that the same drought-relevant gene biological processes categories were regulated in all the species during stress conditions. Namely, downregulated differentially expressed genes were significantly involved in protein modification and kinase activity, cell receptor signalling and ion binding; while upregulated differentially expressed genes were significantly involved in sucrose and starch metabolism, redox, and water and glycerol homeostasis and channel activity. Candidate genes with roles in these functional categories were identified in Miscanthus.  including “phosphatase activity”, “kinase activity” and “oxidoreductase activity”. In addition, transcripts with biological processes gene ontology vocabulary such as amino acid and lipid metabolic processes were significantly depleted in most of the genotypes. This study provides the ﬁrst transcriptome data on the induction of drought-related gene expression in differentacross a range of threefour Miscanthus species. Thus, the findings in the present study can play a key role in fast-tracking miscanthus breeding efforts and its full domestication.
+
+
+# Preparations 
+
+```{r loading packages, message=F, warning=FALSE}
+require(DESeq2,quietly = T);require(ggplot2,quietly =T);require(dplyr,quietly = T);library(pheatmap,quietly = T);library(apeglm,quietly = T);library(UpSetR,quietly = T);library(ashr,quietly = T)
+```
+
+# Setting working directory and Loading dataset
+```{r loading data}
+#set temporary working directory and load the dataset
+#setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/Folder 2")
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
+#setwd("~/analysis/susanne_RNASEQ_data/abel")
+counts <- read.delim("input/gene_count_matrix_without48.csv",header=T,sep=',',row.names = 1, check.names = F)
+dim(counts) #67789    35
+pheno <- read.delim("input/pheno_without48.csv",header = TRUE,check.names=T, sep=',')
+dim(pheno)
+```
+# Analysis for individual species
+## Mxg
+
+```{r DESeq for Mxg, message=F, fig.align= "centre", fig.height=6, fig.width=6, out.width=c('50%', '50%'), fig.show='hold'}
+########    Mxg ########
+pheno.Mxg <- pheno %>% filter (spp == "Mxg") # selecting only mxg metadata
+print(pheno.Mxg)
+counts.Mxg <- counts %>% select(M33, M37, M41, M45, M49, M53, M57, M61, M65)# selecting only mxg counts table
+rownames(pheno.Mxg) <- colnames(counts.Mxg)
+dds.Mxg <- DESeqDataSetFromMatrix(countData = counts.Mxg, colData = pheno.Mxg, design = ~ treatment)
+dds.Mxg <- DESeq(dds.Mxg)
+resultsNames(dds.Mxg)
+counts(dds.Mxg) %>% str
+res1_mxg <- lfcShrink(dds.Mxg, coef = "treatment_drought_vs_control", type="apeglm")
+dim(res1_mxg) # 67789     5
+summary(res1_mxg)
+res2_mxg <- lfcShrink(dds.Mxg, coef = "treatment_waterlogging_vs_control", type="apeglm")
+summary(res2_mxg)
+plotMA(res1_mxg) # control vs drought
+plotMA(res2_mxg) # control vs well-watered
+# save the output dataset in the same directory
+write.table(res1_mxg,"output/DEG-Mxg-drought_Abel.txt")
+write.table(res2_mxg,"output/DEG-Mxg-waterlog_Abel.txt")
+```
+
+## Msac
+
+```{r DESeq for Msac, message=F, fig.align= "centre", fig.height=6, fig.width=6, out.width=c('50%', '50%'), fig.show='hold'}
+#####      Msac     #######
+pheno.Msac <- pheno %>% filter (spp == "Msac") 
+print(pheno.Msac)
+counts.Msac <- counts %>% select(M31, M35, M39, M43, M47, M51, M55, M59, M63)
+rownames(pheno.Msac ) <- colnames(counts.Msac)
+dds.Msac <- DESeqDataSetFromMatrix(countData = counts.Msac, colData = pheno.Msac, design = ~ treatment)
+dds.Msac <- DESeq(dds.Msac)
+resultsNames(dds.Msac)
+res1_Msac <- lfcShrink(dds.Msac, coef = "treatment_drought_vs_control", type="apeglm")
+dim(res1_Msac) # 67789     5
+summary(res1_Msac)
+res2_Msac <- lfcShrink(dds.Msac, coef = "treatment_waterlogging_vs_control", type="apeglm")
+summary(res2_Msac)
+plotMA(res1_Msac) # control vs drought 
+plotMA(res2_Msac) # control vs well-watered
+write.table(res1_Msac,"output/DEG-Msac-drought_Abel.txt")
+write.table(res2_Msac,"output/DEG-Msac-waterlog_Abel.txt")
+```
+
+## Hybdrid3n
+
+```{r DESeq for Hybrid3n, message=F, fig.align= "centre", fig.height=6, fig.width=6, out.width=c('50%', '50%'), fig.show='hold'}
+ ####      Hybrid3n     #######
+pheno.Hybrid3n <- pheno %>% filter (spp == "Hybrid3n")
+print(pheno.Hybrid3n)
+counts.Hybrid3n <- counts %>% select(M34, M38, M42, M46, M50, M54, M58, M62, M66)
+colnames(counts.Hybrid3n) <- rownames(pheno.Hybrid3n)
+dds.Hybrid3n <- DESeqDataSetFromMatrix(countData = counts.Hybrid3n, colData = pheno.Hybrid3n, design = ~ treatment)
+dds.Hybrid3n <- DESeq(dds.Hybrid3n)
+resultsNames(dds.Hybrid3n)
+res1_Hybrid3n <- lfcShrink(dds.Hybrid3n, coef = "treatment_drought_vs_control", type="apeglm")
+dim(res1_Hybrid3n) # 67789     5
+summary(res1_Hybrid3n)
+res2_Hybrid3n <- lfcShrink(dds.Hybrid3n, coef = "treatment_waterlogging_vs_control", type="apeglm")
+summary(res2_Hybrid3n)
+plotMA(res1_Hybrid3n) # control vs drought
+plotMA(res2_Hybrid3n) # control vs well-watered
+#
+write.table(res1_Hybrid3n,"output/DEG-Hybrid3n-drought_Abel.txt")
+write.table(res2_Hybrid3n,"output/DEG-Hybrid3n-waterlog_Abel.txt")
+```
+
+## Msin
+
+```{r DESeq for Msin, message=F, fig.align= "centre", fig.height=6, fig.width=6, out.width=c('50%', '50%'), fig.show='hold'}
+####      Msin   #######
+pheno.Msin <- pheno %>% filter (spp == "Msin") 
+print(pheno.Msin)
+counts.Msin <- counts %>% select(M32, M36, M40, M44, M52, M56, M60, M64)
+dds.Msin <- DESeqDataSetFromMatrix(countData = counts.Msin, colData = pheno.Msin, design = ~ treatment)
+dds.Msin <- DESeq(dds.Msin)
+resultsNames(dds.Msin)
+res1_Msin <- lfcShrink(dds.Msin, coef = "treatment_drought_vs_control", type="apeglm")
+dim(res1_Msin) # 67789     5
+summary(res1_Msin)
+res2_Msin <- lfcShrink(dds.Msin, coef = "treatment_waterlogging_vs_control", type="apeglm")
+summary(res2_Msin)
+plotMA(res1_Msin) # control vs drought
+plotMA(res2_Msin) # control vs well-watered
+
+write.table(res1_Msin,"output/DEG-Msin-drought_Abel.txt")
+write.table(res2_Msin,"output/DEG-Msin-waterlog_Abel.txt")
+```
+
+# PCA for all libraries
+
+```{r DESeq for all without M48, message=F, fig.align= "centre", fig.height=6, fig.width=10,out.width=c('50%', '50%')}
+###DESeq for all withoutM48
+#setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/Folder 2") 
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
+counts.WOM48 <- read.delim("input/gene_count_matrix_without48.csv",header=T,sep=',',row.names = 1,check.names=FALSE)
+dim(counts.WOM48)
+#pheno$name = as.factor(pheno$name)#enforcing rownames are factors not numerics
+rownames(pheno) <- colnames(counts.WOM48)
+all(rownames(pheno) == colnames(counts.WOM48))
+#ggplot(counts.WOM48)+ geom_histogram(aes(x = M31), stat = "bin", bins = 200) + xlab("Raw expression counts") + ylab ("Number of genes")
+dds.WOM48 <- DESeqDataSetFromMatrix(countData = counts.WOM48, colData = pheno, design = ~ treatment + spp)
+summary(dds.WOM48)
+keep.WOM48 <- rowSums(counts(dds.WOM48) >= 5) >= 4
+table(keep.WOM48)
+dds.WOM48.filtered <- dds.WOM48[keep.WOM48,]
+summary(dds.WOM48.filtered)
+dds.WOM48.filtered <- DESeq(dds.WOM48.filtered) ;resultsNames(dds.WOM48.filtered)
+boxplot(log10(counts(dds.WOM48.filtered)+1))# before normalization
+dds.WOM48.filtered <- estimateSizeFactors(dds.WOM48.filtered)
+sizeFactors(dds.WOM48.filtered)
+normalized_dds_counts <- counts(dds.WOM48.filtered, normalized=TRUE)
+#boxplot(log10(counts(dds.WOM48.filtered,normalized=TRUE)+1))# after normalization
+vsd_all.WOM48 <- vst(dds.WOM48.filtered, blind=TRUE)
+head(vsd_all.WOM48, n=3)
+vsd_mat_all.WOM48 <- assay(vsd_all.WOM48)# Compute pairwise correlation values
+vsd_cor_all.WOM48 <- cor(vsd_mat_all.WOM48)
+#View(vsd_cor_all)
+pheatmap(vsd_cor_all.WOM48, annotation = select(pheno, treatment))
+pheatmap(vsd_cor_all.WOM48, annotation = select(pheno, spp))
+
+resultsNames(dds.WOM48.filtered)
+res_drought_vs_con_ape = lfcShrink(dds.WOM48.filtered, coef = 2, type = "apeglm")
+res_drought_vs_con_norm = lfcShrink(dds.WOM48.filtered, coef = 2, type = "normal")
+res_drought_vs_con_Ash = lfcShrink(dds.WOM48.filtered, coef = 2, type = "ashr")
+par(mfrow=c(1,3), mar=c(4,4,2,1))
+xlim = c(1, 1e5); ylim=c(-3,3)
+png("output/drought_vs_con_feb 2020_apeglm.png");plotMA(res_drought_vs_con_ape, xlim=xlim, ylim=ylim, main= "drought_vs_con_feb 2020_apeglm"); dev.off()
+png("output/drought_vs_con_feb 2020_normal.png");plotMA(res_drought_vs_con_norm , xlim=xlim, ylim=ylim, main= "drought_vs_con_feb 2020_normal"); dev.off()
+png("output/drought_vs_cont_feb 2020_ashr.png");plotMA(res_drought_vs_con_Ash, xlim=xlim, ylim=ylim, main= "drought_vs_cont_feb 2020_ashr"); dev.off()
+## well-watered vs control
+par(mfrow=c(1,3), mar=c(4,4,2,1))
+xlim = c(1, 1e5); ylim=c(-3,3)
+res_water_vs_con_ape = lfcShrink(dds.WOM48.filtered, coef = 3, type = "apeglm")
+res_water_vs_con_norm = lfcShrink(dds.WOM48.filtered, coef = 3, type = "normal")
+res_water_vs_con_Ash = lfcShrink(dds.WOM48.filtered, coef = 3, type = "ashr")
+png("output/water_vs_con_feb 2020_apeglm.png"); plotMA(res_water_vs_con_ape, xlim=xlim, ylim=ylim, main= "water_vs_con_feb 2020_apeglm"); dev.off()
+png("output/water_vs_con_feb 2020_normal.png");plotMA(res_water_vs_con_norm , xlim=xlim, ylim=ylim, main= "water_vs_con_feb 2020_normal"); dev.off()
+png("output/water_vs_cont_feb 2020_ashr.png");plotMA(res_water_vs_con_Ash, xlim=xlim, ylim=ylim, main= "water_vs_cont_feb 2020_ashr"); dev.off()
+
+plotPCA1 <- function (dds.WOM48.filtered, intgroup = "treatment", ntop = 500, returnData = FALSE) 
+  {
+    rv <- rowVars(assay(dds.WOM48.filtered))
+    select <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+    pca <- prcomp(t(assay(dds.WOM48.filtered)[select, ]))
+    percentVar <- pca$sdev^2/sum(pca$sdev^2)
+    if (!all(intgroup %in% names(colData(dds.WOM48.filtered)))) {
+        stop("the argument 'intgroup' should specify columns of colData(dds.filtered)")
+    }
+    intgroup.df <- as.data.frame(colData(dds.WOM48.filtered)[, intgroup, 
+        drop = FALSE])
+    group <- if (length(intgroup) > 1) {
+        factor(apply(intgroup.df, 1, paste, collapse = " : "))
+    }
+    else {
+        colData(dds.WOM48.filtered)[[intgroup]]
+    }
+    d <- data.frame(PC1 = pca$x[, 1], PC2 = pca$x[, 2], PC3 = pca$x[, 3], PC4 = pca$x[, 4], group = group, intgroup.df, name = colnames(dds.WOM48.filtered))
+    if (returnData) {
+        attr(d, "percentVar") <- percentVar[1:2]
+        return(d)
+    }
+    library(ggrepel)
+    ggplot(data = d, aes_string(x = "PC1", y = "PC2", color = "treatment", shape = "spp" )) + geom_point(size = 4) +
+   # geom_text_repel(aes(label = name), hjust = 0.6,vjust = -0.7, nudge_x = 0.09, size = 0, 
+   #                 point.padding = 0.35, box.padding = 0.25, direction = "both") + 
+        xlab(paste0("PC1: ", round(percentVar[1] * 
+        100), "% variance")) + ylab(paste0("PC2: ", round(percentVar[2] * 
+        100), "% variance")) + coord_fixed() + theme_bw()+ scale_shape_manual(values = c(21, 22, 23, 24)) +
+ #    xlim(-40,40) + ylim(-40,40) +
+      theme(axis.text=element_text(size=14),legend.position = "right",plot.title = element_text(size=14),
+        axis.title=element_text(size=14,face="bold")) + scale_color_manual(values = c("#e41a1c", "#377eb8", "#4daf4a"))+
+       theme(legend.title = element_text(color = "white", size = 14),
+      legend.text = element_text(color = "black")) + theme (legend.key.size = unit(0.5, "cm"),
+      legend.key.width = unit(0.2,"cm") )
+}
+ p_all_1 = plotPCA1(vsd_all.WOM48, intgroup=c("treatment", "spp")) # fig 1
+ p_all_1
+```
+
+# Upregulated DEGs in well-watered conditions Vs. control
+```{r UpsetR for well-watered samples, message=F, fig.align= "centre", fig.height=6, fig.width=9}
+# upset plot for well-watered DEGs 19/02/2020
+#setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/Folder 2") 
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
+
+counts <- read.delim("input/gene_count_matrix_without48.csv",header=T,sep=',',row.names = 1)
+allgenes <- rownames(counts)
+mxg.waterlog <- read.delim("output/DEG-Mxg-waterlog_Abel.txt", header = T, sep = ' ')
+msin.waterlog <- read.delim("output/DEG-Msin-waterlog_Abel.txt", header = T, sep = ' ')
+msac.waterlog <- read.delim("output/DEG-Msac-waterlog_Abel.txt", header = T, sep = ' ')
+hybrid3n.waterlog <- read.delim("output/DEG-Hybrid3n-waterlog_Abel.txt", header = T, sep = ' ')
+list <- as.data.frame(allgenes)
+rownames(list) <- list$allgenes #MOVED HERE
+list$Mxg.well_watered <- as.integer(allgenes %in% rownames(mxg.waterlog[mxg.waterlog$padj<0.01,])) 
+list$Msin.well_watered <- as.integer(allgenes %in% rownames(msin.waterlog[msin.waterlog$padj<0.05,])) #!!!!
+list$Msac.well_watered <- as.integer(allgenes %in% rownames(msac.waterlog[msac.waterlog$padj<0.01,]))
+list$hybrid3n.well_watered <- as.integer(allgenes %in% rownames(hybrid3n.waterlog[hybrid3n.waterlog$padj<0.05,])) #!!!!
+
+#rownames(list) <- list$allgenes
+list <- list[,-1]
+write.csv(list,file="output/upset_waterlog.csv")
+
+upset <- upset(list, nsets = 4, number.angles = 0, point.size = 3, line.size = 1.2, mainbar.y.label = "Shared DEG", sets.x.label = "Total DEG", text.scale = c(2, 2, 2, 1, 2, 2), order.by = "freq")
+upset
+
+```
+## Upregulated DEGs in droughted conditions Vs. control
+```{r UpsetR for drought samples, message=F, fig.align= "centre", fig.height=6, fig.width=9}
+# upset plot for drought DEGs 19/02/2020
+#setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/Folder 2") 
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
+counts <- read.delim("input/gene_count_matrix_without48.csv",header=T,sep=',',row.names = 1)
+allgenes <- rownames(counts)
+mxg.drought <- read.delim("output/DEG-Mxg-drought_Abel.txt", header = T, sep = ' ')
+msin.drought <- read.delim("output/DEG-Msin-drought_Abel.txt", header = T, sep = ' ')
+msac.drought <- read.delim("output/DEG-Msac-drought_Abel.txt", header = T, sep = ' ')
+hybrid3n.drought <- read.delim("output/DEG-Hybrid3n-drought_Abel.txt", header = T, sep = ' ')
+list <- as.data.frame(allgenes)
+list$mxg.drought <- as.integer(allgenes %in% rownames(mxg.drought[mxg.drought$padj<0.01,])) 
+list$msin.drought <- as.integer(allgenes %in% rownames(msin.drought[msin.drought$padj<0.05,])) #!!!!
+list$msac.drought <- as.integer(allgenes %in% rownames(msac.drought[msac.drought$padj<0.01,]))
+list$hybrid3n.drought <- as.integer(allgenes %in% rownames(hybrid3n.drought[hybrid3n.drought$padj<0.05,])) #!!!!
+rownames(list) <- list$allgenes
+list <- list[,-1]
+write.csv(list,file="output/upset_drought.csv")
+
+myupset<-upset(list, nsets = 4, number.angles = 0, point.size = 3, line.size = 1.2, mainbar.y.label = "Shared DEG", sets.x.label = "Total DEG", text.scale = c(2, 2, 2, 2, 2, 2), order.by = "freq")
+myupset
+```
+
+
+# Enrichments analysis of GO terms among DEGs in drought conditions
+
+##EA calculations with TopGP
+```{r message=FALSE, warning=FALSE}
+#NEW:
+require(DESeq2);require(ggplot2);require(dplyr);library(pheatmap);library(apeglm);library(UpSetR);library(topGO);library(data.table)
+options(scipen=999) #disable scientific annotation
+
+#setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/abel_topgo") 
+ setwd("~/analysis/susanne_RNASEQ_data/abel/abel20200511")
+#setwd("~/analysis/susanne_RNASEQ_data/abel")
+list$mxg.drought.UP <- as.integer(allgenes %in% rownames(mxg.drought[mxg.drought$log2FoldChange>0,])) 
+list$mxg.drought.DOWN <- as.integer(allgenes %in% rownames(mxg.drought[mxg.drought$log2FoldChange<0,])) 
+
+list$hybrid3n.drought.UP <- as.integer(allgenes %in% rownames(hybrid3n.drought[hybrid3n.drought$log2FoldChange>0,])) 
+list$hybrid3n.drought.DOWN <- as.integer(allgenes %in% rownames(hybrid3n.drought[hybrid3n.drought$log2FoldChange<0,])) 
+
+list$msac.drought.UP <- as.integer(allgenes %in% rownames(msac.drought[msac.drought$log2FoldChange>0,])) 
+list$msac.drought.DOWN <- as.integer(allgenes %in% rownames(msac.drought[msac.drought$log2FoldChange<0,])) 
+
+list$msin.drought.UP <- as.integer(allgenes %in% rownames(msin.drought[msin.drought$log2FoldChange>0,])) 
+list$msin.drought.DOWN <- as.integer(allgenes %in% rownames(msin.drought[msin.drought$log2FoldChange<0,])) 
+
+###
+
+list$names<-rownames(list) #!!!!
+
+mxg.drought.up <-  list %>% filter(mxg.drought == 1) %>% filter(mxg.drought.UP == 1) #1010
+dim(mxg.drought.up)
+mxg.drought.down <- list %>% filter(mxg.drought == 1) %>% filter(mxg.drought.DOWN == 1)  #1343
+dim(mxg.drought.down)
+
+hybrid3n.drought.up <-  list %>% filter(hybrid3n.drought == 1) %>% filter(hybrid3n.drought.UP == 1) #488
+dim(hybrid3n.drought.up)
+hybrid3n.drought.down <-  list %>% filter(hybrid3n.drought == 1) %>% filter(hybrid3n.drought.DOWN == 1) #691
+dim(hybrid3n.drought.down)
+
+msac.drought.up <-  list %>% filter(msac.drought == 1) %>% filter(msac.drought.UP == 1) 
+dim(msac.drought.up) #793
+msac.drought.down <- list %>% filter(msac.drought == 1) %>% filter(msac.drought.DOWN == 1)  
+dim(msac.drought.down) #874
+
+msin.drought.up <- list %>% filter(msin.drought == 1) %>% filter(msin.drought.UP == 1) 
+dim(msin.drought.up) #131
+msin.drought.down <- list %>% filter(msin.drought == 1) %>% filter(msin.drought.DOWN == 1)  
+dim(msin.drought.down) #642
+###FUNCTIONS:
+
+
+run.topgo.pipeline.BP <- function(mytemp) {
+  #PIPE starts
+  list.mytemp <- factor(as.integer(allgenes %in% mytemp$names))
+  names(list.mytemp) <- allgenes
+  #BP
+  fdata.mytemp.BP <- new("topGOdata", ontology="BP", allGenes=list.mytemp, annot = annFUN.gene2GO, gene2GO = geneID2GO)
+  results.fdata.mytemp.BP <- GenTable(fdata.mytemp.BP, weight_fisher = runTest(fdata.mytemp.BP, algorithm = "weight", statistic = "fisher"), elim_fisher = runTest(fdata.mytemp.BP, algorithm = "elim", statistic = "fisher"), weight01_fisher = runTest(fdata.mytemp.BP, algorithm = "weight01", statistic = "fisher"), topNodes=150)
+  #add genes to dataframe
+  results.fdata.mytemp.BP$genes <- sapply(results.fdata.mytemp.BP$GO.ID, function(x) {
+    genes<- genesInTerm(fdata.mytemp.BP, x)  
+    genes[[1]][genes[[1]] %in% mytemp$names]
+  })
+  results.fdata.mytemp.BP  
+}
+
+#MF
+run.topgo.pipeline.MF <- function(mytemp) {
+  list.mytemp <- factor(as.integer(allgenes %in% mytemp$names))
+  names(list.mytemp) <- allgenes
+  fdata.mytemp.MF <- new("topGOdata", ontology="MF", allGenes=list.mytemp, annot = annFUN.gene2GO, gene2GO = geneID2GO)
+  results.fdata.mytemp.MF <- GenTable(fdata.mytemp.MF, weight_fisher = runTest(fdata.mytemp.MF, algorithm = "weight", statistic = "fisher"), elim_fisher = runTest(fdata.mytemp.MF, algorithm = "elim", statistic = "fisher"), weight01_fisher = runTest(fdata.mytemp.MF, algorithm = "weight01", statistic = "fisher"), topNodes=50)
+  #add genes to dataframe
+  results.fdata.mytemp.MF$genes <- sapply(results.fdata.mytemp.MF$GO.ID, function(x) {
+    genes<-genesInTerm(fdata.mytemp.MF, x) 
+    genes[[1]][genes[[1]] %in% mytemp$names]
+  })
+  results.fdata.mytemp.MF
+}
+##END FUNCTIONS###
+
+#calculate and save results:
+counts <- read.delim("input/gene_count_matrix_without48.csv",header=T,sep=',',row.names = 1)
+allgenes <- rownames(counts)
+ 
+topgo.file <- read.delim("input/slim_annot_TOPGO.annot", header = F)
+geneID2GO <- readMappings(file = "input/slim_annot_TOPGO.annot")
+
+slim.BP.mxg.drought.up <- run.topgo.pipeline.BP(mxg.drought.up)
+fwrite(slim.BP.mxg.drought.up, file = "output/slim-mxg.drought.up.BP.csv")
+
+slim.MF.mxg.drought.up <- run.topgo.pipeline.MF(mxg.drought.up)
+fwrite(slim.MF.mxg.drought.up, file = "output/slim-mxg.drought.up.MF.csv")
+
+slim.BP.mxg.drought.down <- run.topgo.pipeline.BP(mxg.drought.down)
+fwrite(slim.BP.mxg.drought.down, file = "output/slim-mxg.drought.down.BP.csv")
+
+slim.MF.mxg.drought.down <- run.topgo.pipeline.MF(mxg.drought.down)
+fwrite(slim.MF.mxg.drought.down, file = "output/slim-mxg.drought.down.MF.csv")
+#
+slim.BP.hybrid3n.drought.up <- run.topgo.pipeline.BP(hybrid3n.drought.up)
+fwrite(slim.BP.hybrid3n.drought.up, file = "output/slim-hybrid3n.drought.up.BP.csv")
+
+slim.MF.hybrid3n.drought.up <- run.topgo.pipeline.MF(hybrid3n.drought.up)
+fwrite(slim.MF.hybrid3n.drought.up, file = "output/slim-hybrid3n.drought.up.MF.csv")
+
+slim.BP.hybrid3n.drought.down <- run.topgo.pipeline.BP(hybrid3n.drought.down)
+fwrite(run.topgo.pipeline.BP(hybrid3n.drought.down), file = "output/slim-hybrid3n.drought.down.BP.csv")
+
+slim.MF.hybrid3n.drought.down <- run.topgo.pipeline.MF(hybrid3n.drought.down)
+fwrite(slim.MF.hybrid3n.drought.down, file = "output/slim-hybrid3n.drought.down.MF.csv")
+#
+slim.BP.msin.drought.up <- run.topgo.pipeline.BP(msin.drought.up)
+fwrite(slim.BP.msin.drought.up, file = "output/slim-msin.drought.up.BP.csv")
+
+slim.MF.msin.drought.up <- run.topgo.pipeline.MF(msin.drought.up)
+fwrite(slim.MF.msin.drought.up, file = "output/slim-msin.drought.up.MF.csv")
+
+slim.BP.msin.drought.down <- run.topgo.pipeline.BP(msin.drought.down)
+fwrite(slim.BP.msin.drought.down, file = "output/slim-msin.drought.down.BP.csv")
+
+slim.MF.msin.drought.down <- run.topgo.pipeline.MF(msin.drought.down)
+fwrite(slim.MF.msin.drought.down, file = "output/slim-msin.drought.down.MF.csv")
+#
+slim.BP.msac.drought.up <- run.topgo.pipeline.BP(msac.drought.up)
+fwrite(slim.BP.msac.drought.up, file = "output/slim-msac.drought.up.BP.csv")
+
+slim.MF.msac.drought.up <- run.topgo.pipeline.MF(msac.drought.up)
+fwrite(slim.MF.msac.drought.up, file = "output/slim-msac.drought.up.MF.csv")
+
+slim.BP.msac.drought.down <- run.topgo.pipeline.BP(msac.drought.down)
+fwrite(slim.BP.msac.drought.down, file = "output/slim-msac.drought.down.BP.csv")
+
+slim.MF.msac.drought.down <- run.topgo.pipeline.MF(msac.drought.down)
+fwrite(slim.MF.msac.drought.down, file = "output/slim-msac.drought.down.MF.csv")
+###
+
+#FULL ANNOTATION:
+topgo.file <- read.delim("input/full_annot_TOPGO.annot", header = F)
+geneID2GO <- readMappings(file = "input/full_annot_TOPGO.annot")
+
+#FULL
+full.BP.mxg.drought.up <- run.topgo.pipeline.BP(mxg.drought.up)
+fwrite(full.BP.mxg.drought.up, file = "output/full-mxg.drought.up.BP.csv")
+
+full.MF.mxg.drought.up <- run.topgo.pipeline.MF(mxg.drought.up)
+fwrite(full.MF.mxg.drought.up, file = "output/full-mxg.drought.up.MF.csv")
+
+full.BP.mxg.drought.down <- run.topgo.pipeline.BP(mxg.drought.down)
+fwrite(full.BP.mxg.drought.down, file = "output/full-mxg.drought.down.BP.csv")
+
+full.MF.mxg.drought.down <- run.topgo.pipeline.MF(mxg.drought.down)
+fwrite(full.MF.mxg.drought.down, file = "output/full-mxg.drought.down.MF.csv")
+#
+full.BP.hybrid3n.drought.up <- run.topgo.pipeline.BP(hybrid3n.drought.up)
+fwrite(full.BP.hybrid3n.drought.up, file = "output/full-hybrid3n.drought.up.BP.csv")
+
+full.MF.hybrid3n.drought.up <- run.topgo.pipeline.MF(hybrid3n.drought.up)
+fwrite(full.MF.hybrid3n.drought.up, file = "output/full-hybrid3n.drought.up.MF.csv")
+
+full.BP.hybrid3n.drought.down <- run.topgo.pipeline.BP(hybrid3n.drought.down)
+fwrite(run.topgo.pipeline.BP(hybrid3n.drought.down), file = "output/full-hybrid3n.drought.down.BP.csv")
+
+full.MF.hybrid3n.drought.down <- run.topgo.pipeline.MF(hybrid3n.drought.down)
+fwrite(full.MF.hybrid3n.drought.down, file = "output/full-hybrid3n.drought.down.MF.csv")
+#
+full.BP.msin.drought.up <- run.topgo.pipeline.BP(msin.drought.up)
+fwrite(full.BP.msin.drought.up, file = "output/full-msin.drought.up.BP.csv")
+
+full.MF.msin.drought.up <- run.topgo.pipeline.MF(msin.drought.up)
+fwrite(full.MF.msin.drought.up, file = "output/full-msin.drought.up.MF.csv")
+
+full.BP.msin.drought.down <- run.topgo.pipeline.BP(msin.drought.down)
+fwrite(full.BP.msin.drought.down, file = "output/full-msin.drought.down.BP.csv")
+
+full.MF.msin.drought.down <- run.topgo.pipeline.MF(msin.drought.down)
+fwrite(full.MF.msin.drought.down, file = "output/full-msin.drought.down.MF.csv")
+#
+full.BP.msac.drought.up <- run.topgo.pipeline.BP(msac.drought.up)
+fwrite(full.BP.msac.drought.up, file = "output/full-msac.drought.up.BP.csv")
+
+full.MF.msac.drought.up <- run.topgo.pipeline.MF(msac.drought.up)
+fwrite(full.MF.msac.drought.up, file = "output/full-msac.drought.up.MF.csv")
+
+full.BP.msac.drought.down <- run.topgo.pipeline.BP(msac.drought.down)
+fwrite(full.BP.msac.drought.down, file = "output/full-msac.drought.down.BP.csv")
+
+full.MF.msac.drought.down <- run.topgo.pipeline.MF(msac.drought.down)
+fwrite(full.MF.msac.drought.down, file = "output/full-msac.drought.down.MF.csv")
+
+```
+
+
+## Plotting enrichment analysis drought/control
+
+```{r message=FALSE}
+#BUBBLEPLOTS
+library(corrplot);library(reshape2);library(RColorBrewer);library(pheatmap);library(dplyr);library(ggplot2)
+library(topGO)
+library(data.table)
+#setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/abel_topgo")
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
+#setwd("~/analysis/susanne_RNASEQ_data/abel")
+
+#slim
+slim.BP.mxg.drought.up$regulation <- 1
+slim.MF.mxg.drought.up$regulation <- 1
+slim.BP.mxg.drought.down$regulation <- -1
+slim.MF.mxg.drought.down$regulation <- -1
+slim.BP.hybrid3n.drought.up$regulation <- 1 
+slim.MF.hybrid3n.drought.up$regulation <- 1
+slim.BP.hybrid3n.drought.down$regulation <- -1 
+slim.MF.hybrid3n.drought.down$regulation <- -1
+slim.BP.msin.drought.up$regulation <- 1
+slim.MF.msin.drought.up$regulation <- 1
+slim.BP.msin.drought.down$regulation <- -1 
+slim.MF.msin.drought.down$regulation <- -1
+slim.BP.msac.drought.up$regulation <- 1
+slim.MF.msac.drought.up$regulation <- 1
+slim.BP.msac.drought.down$regulation <- -1 
+slim.MF.msac.drought.down$regulation <- -1
+#
+slim.BP.mxg.drought.up$spp <- "mxg"
+slim.MF.mxg.drought.up$spp <- "mxg"
+slim.BP.mxg.drought.down$spp <- "mxg"
+slim.MF.mxg.drought.down$spp <- "mxg"
+slim.BP.hybrid3n.drought.up$spp <- "hybrid3n"
+slim.MF.hybrid3n.drought.up$spp <- "hybrid3n"
+slim.BP.hybrid3n.drought.down$spp <- "hybrid3n"
+slim.MF.hybrid3n.drought.down$spp <- "hybrid3n"
+slim.BP.msin.drought.up$spp <- "msin"
+slim.MF.msin.drought.up$spp <- "msin"
+slim.BP.msin.drought.down$spp <- "msin"
+slim.MF.msin.drought.down$spp <- "msin"
+slim.BP.msac.drought.up$spp <- "msac"
+slim.MF.msac.drought.up$spp <- "msac"
+slim.BP.msac.drought.down$spp <- "msac"
+slim.MF.msac.drought.down$spp <- "msac"
+#
+#CORRECT FORMATING:
+#
+supertable <- rbind(slim.BP.mxg.drought.up,slim.BP.mxg.drought.down,slim.BP.hybrid3n.drought.up,slim.BP.hybrid3n.drought.down,slim.BP.msin.drought.up,slim.BP.msin.drought.down,slim.BP.msac.drought.up,slim.BP.msac.drought.down,slim.MF.mxg.drought.up,slim.MF.mxg.drought.down,slim.MF.hybrid3n.drought.up,slim.MF.hybrid3n.drought.down,slim.MF.msin.drought.up,slim.MF.msin.drought.down,slim.MF.msac.drought.up,slim.MF.msac.drought.down)
+
+supertable.MF <- rbind(slim.MF.mxg.drought.up,slim.MF.mxg.drought.down,slim.MF.hybrid3n.drought.up,slim.MF.hybrid3n.drought.down,slim.MF.msin.drought.up,slim.MF.msin.drought.down,slim.MF.msac.drought.up,slim.MF.msac.drought.down)
+
+supertable.BP <- rbind(slim.BP.mxg.drought.up,slim.BP.mxg.drought.down,slim.BP.hybrid3n.drought.up,slim.BP.hybrid3n.drought.down,slim.BP.msin.drought.up,slim.BP.msin.drought.down,slim.BP.msac.drought.up,slim.BP.msac.drought.down)
+
+#correct the scientific notation by converting from character to numeric
+supertable$weight01_fisher <- as.numeric(supertable$weight01_fisher)
+supertable.MF$weight01_fisher <- as.numeric(supertable.MF$weight01_fisher)
+supertable.BP$weight01_fisher <- as.numeric(supertable.BP$weight01_fisher)
+
+
+enriched.GOs <- supertable %>% filter(weight01_fisher<0.01) %>% filter (Significant>=5) #%>% select(GO.ID) 
+enriched.GOs.MF <- supertable.MF %>% filter(weight01_fisher<0.01) %>% filter (Significant>=5) #%>% select(GO.ID) 
+enriched.GOs.BP <- supertable.BP %>% filter(weight01_fisher<0.01) %>% filter (Significant>=5) #%>% select(GO.ID) 
+
+#list of GOs that are enrich in at least one analysis
+
+selected <- supertable %>% filter(GO.ID %in% unlist(enriched.GOs)) #filter our enrich GOs by name
+selected.MF <- supertable.MF %>% filter(GO.ID %in% unlist(enriched.GOs.MF)) #filter our enrich GOs by name
+selected.BP <- supertable.BP %>% filter(GO.ID %in% unlist(enriched.GOs.BP)) #filter our enrich GOs by name
+
+
+#PUT A BOTTOM CAP
+selected$weight01_fisher[selected$weight01_fisher<0.0001] <- 0.0001
+selected.MF$weight01_fisher[selected.MF$weight01_fisher<0.0001] <- 0.0001
+selected.BP$weight01_fisher[selected.BP$weight01_fisher<0.0001] <- 0.0001
+
+
+```
+
+## plotting enrichment analysis drought/control (GOSLIM)
+```{r Plot Bubbles SLIM, fig.width=8}
+#PLOT BUBBLES SLIM 
+
+library(RColorBrewer)
+
+table.merge.filter <- selected
+p <- ggplot(data=table.merge.filter, aes(x=spp,y=Term)) 
+p <- p + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1, alpha=1 )
+p <- p + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1, alpha=1)
+p <- p + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1.5, alpha=1)
+p <- p + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1.5, alpha=1 )
+p <- p + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=2, alpha=1 )
+p <- p + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=2, alpha=1) 
+#p <- p + scale_size(breaks = c(0.5,1,2,3,4,5), range=c(2,8))
+#p <- p + scale_color_gradientn(trans = "log2", colours = brewer.pal(9,"Blues"), breaks = c(0,1,5,10,20,50,100,200))
+p <- p + scale_size(breaks = c(10,15,20,30,40,50,60,70,80,90,100,110,150), range = (c(1,10)))
+#p <- p + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),"white",brewer.pal(9,"Reds")), limits = c(-15,15), breaks = c(-15,-10,-5,-2.5,-1,0,1,2.5,5,10,15))
+p <- p + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),brewer.pal(9,"Reds")))
+#p <- p + scale_y_discrete(limits=rev(myTERMS))
+p + theme_minimal()
+
+
+
+table.merge.filter <- selected.BP
+p1 <- ggplot(data=table.merge.filter, aes(x=spp,y=Term)) 
+p1 <- p1 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1, alpha=1 )
+p1 <- p1 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1, alpha=1)
+p1 <- p1 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1.5, alpha=1)
+p1 <- p1 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1.5, alpha=1 )
+p1 <- p1 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=2, alpha=1 )
+p1 <- p1 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=2, alpha=1) 
+p1 <- p1 + scale_size(breaks = c(10,15,20,30,40,50,60,70,80,90,100,110,150), range = (c(1,10)))
+p1 <- p1 + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),brewer.pal(9,"Reds")))
+p1 <- p1 + scale_x_discrete(limits = c("mxg","hybrid3n","msin","msac")) 
+p1 <- p1 + scale_y_discrete(limits=rev(c("cellular amino acid metabolic process",
+"photosynthesis",
+"cellular protein modification process",
+"protein folding",
+"generation of precursor metabolites and ...",
+"signal transduction",
+"small molecule metabolic process",
+"carbohydrate metabolic process",
+"cofactor metabolic process",
+"lipid metabolic process",
+"biosynthetic process",
+"translation",
+"secondary metabolic process",
+"ribosome biogenesis",
+"homeostatic process",
+"membrane organization",
+"response to stress",
+"nitrogen cycle metabolic process")))
+p1 <- p1 + theme_linedraw()
+p1
+
+
+table.merge.filter <- selected.MF
+p2 <- ggplot(data=table.merge.filter, aes(x=spp,y=Term)) 
+p2 <- p2 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1, alpha=1 )
+p2 <- p2 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1, alpha=1)
+p2 <- p2 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1.5, alpha=1)
+p2 <- p2 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1.5, alpha=1 )
+p2 <- p2 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=2, alpha=1 )
+p2 <- p2 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=2, alpha=1) 
+p2 <- p2 + scale_size(breaks = c(10,15,20,30,40,50,60,70,80,90,100,110,150), range = (c(1,10)))
+p2 <- p2 + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),brewer.pal(9,"Reds")))
+p2 <- p2 + scale_x_discrete(limits = c("mxg","hybrid3n","msin","msac")) 
+p2 <- p2 + scale_y_discrete(limits=rev(c("kinase activity",
+"ion binding",
+"structural constituent of ribosome",
+"oxidoreductase activity",
+"RNA binding",
+"transferase activity, transferring glyco...",
+"hydrolase activity, acting on glycosyl b...",
+"isomerase activity",
+"phosphatase activity")))
+p2 <- p2 + theme_linedraw()
+p2
+```
+
+## Side-to-side plots
+```{r GRID, fig.width=15}
+library(gridExtra)
+grid.arrange(p2, p1,  layout_matrix=rbind(c(2,1),c(2,3)))
+```
+
+## plotting EA full GO annotation
+```{r fig.height=14, fig.width=8}
+#FULL GO ANNOTATION
+
+library(RColorBrewer)
+
+#setwd("~/analysis/susanne_RNASEQ_data/abel")
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
+
+#full
+full.BP.mxg.drought.up$regulation <- 1
+full.MF.mxg.drought.up$regulation <- 1
+full.BP.mxg.drought.down$regulation <- -1
+full.MF.mxg.drought.down$regulation <- -1
+full.BP.hybrid3n.drought.up$regulation <- 1 
+full.MF.hybrid3n.drought.up$regulation <- 1
+full.BP.hybrid3n.drought.down$regulation <- -1 
+full.MF.hybrid3n.drought.down$regulation <- -1
+full.BP.msin.drought.up$regulation <- 1
+full.MF.msin.drought.up$regulation <- 1
+full.BP.msin.drought.down$regulation <- -1 
+full.MF.msin.drought.down$regulation <- -1
+full.BP.msac.drought.up$regulation <- 1
+full.MF.msac.drought.up$regulation <- 1
+full.BP.msac.drought.down$regulation <- -1 
+full.MF.msac.drought.down$regulation <- -1
+#
+full.BP.mxg.drought.up$spp <- "mxg"
+full.MF.mxg.drought.up$spp <- "mxg"
+full.BP.mxg.drought.down$spp <- "mxg"
+full.MF.mxg.drought.down$spp <- "mxg"
+full.BP.hybrid3n.drought.up$spp <- "hybrid3n"
+full.MF.hybrid3n.drought.up$spp <- "hybrid3n"
+full.BP.hybrid3n.drought.down$spp <- "hybrid3n"
+full.MF.hybrid3n.drought.down$spp <- "hybrid3n"
+full.BP.msin.drought.up$spp <- "msin"
+full.MF.msin.drought.up$spp <- "msin"
+full.BP.msin.drought.down$spp <- "msin"
+full.MF.msin.drought.down$spp <- "msin"
+full.BP.msac.drought.up$spp <- "msac"
+full.MF.msac.drought.up$spp <- "msac"
+full.BP.msac.drought.down$spp <- "msac"
+full.MF.msac.drought.down$spp <- "msac"
+#
+#CORRECT FORMATING:
+#
+supertable <- rbind(full.BP.mxg.drought.up,full.BP.mxg.drought.down,full.BP.hybrid3n.drought.up,full.BP.hybrid3n.drought.down,full.BP.msin.drought.up,full.BP.msin.drought.down,full.BP.msac.drought.up,full.BP.msac.drought.down,full.MF.mxg.drought.up,full.MF.mxg.drought.down,full.MF.hybrid3n.drought.up,full.MF.hybrid3n.drought.down,full.MF.msin.drought.up,full.MF.msin.drought.down,full.MF.msac.drought.up,full.MF.msac.drought.down)
+
+#supertable.BP <- rbind(full.BP.mxg.drought.up,full.BP.mxg.drought.down,full.BP.hybrid3n.drought.up,full.BP.hybrid3n.drought.down,full.BP.msin.drought.up,full.BP.msin.drought.down,full.BP.msac.drought.up,full.BP.msac.drought.down)
+
+#supertable.MF <- rbind(full.MF.mxg.drought.up,full.MF.mxg.drought.down,full.MF.hybrid3n.drought.up,full.MF.hybrid3n.drought.down,full.MF.msin.drought.up,full.MF.msin.drought.down,full.MF.msac.drought.up,full.MF.msac.drought.down)
+
+#DO EITHER ONE EACH TIME:
+#supertable<-supertable.BP
+#supertable<-supertable.MF
+
+
+#correct the scientific notation by converting from character to numeric
+supertable$weight01_fisher <- as.numeric(supertable$weight01_fisher)
+
+enriched.GOs <- supertable %>% filter(weight01_fisher<0.005) %>% filter (Significant>=10)  #%>% select(GO.ID) #list of GOs that are enrich in at least one analysis
+#CHANGED MIN MEMBERS TO 10 genes
+
+selected <- supertable %>% filter(GO.ID %in% unlist(enriched.GOs)) #filter our enrich GOs by name
+
+#PUT A BOTTOM CAP
+selected$weight01_fisher[selected$weight01_fisher<0.0001] <- 0.0001
+
+table.merge.filter <- selected
+
+p <- ggplot(data=table.merge.filter, aes(x=spp,y=Term)) 
+p <- p + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)),  stroke=0.5, alpha=0.8) 
+p <- p + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)),  stroke=0.5, alpha=0.8) 
+p <- p + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.01) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)),  stroke=1, alpha=0.8) 
+p <- p + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.01) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)),  stroke=1, alpha=0.8) 
+p <- p + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.001), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)),  stroke=2, alpha=0.8) 
+p <- p + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.001), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)),  stroke=2, alpha=0.8) 
+#p <- p + scale_size(breaks = c(0.5,1,2,3,4,5), range=c(2,8))
+#p <- p + scale_color_gradientn(trans = "log2", colours = brewer.pal(9,"Blues"), breaks = c(0,1,5,10,20,50,100,200))
+p <- p + scale_size(breaks = c(5,10,20,30,40,50,75,100), range = (c(2,9)))
+#p <- p + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),"white",brewer.pal(9,"Reds")), limits = c(-15,15), breaks = c(-15,-10,-5,-2.5,-1,0,1,2.5,5,10,15))
+p <- p + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),brewer.pal(9,"Reds")))
+#p <- p + scale_y_discrete(limits=rev(myTERMS))
+p <- p + scale_x_discrete(limits = c("mxg","hybrid3n","msin","msac")) 
+p + theme_light()
+
+
+
+p2 <- ggplot(data=table.merge.filter, aes(x=spp,y=Term)) 
+p2 <- p2 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1, alpha=1 )
+p2 <- p2 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher>0.1), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1, alpha=1)
+p2 <- p2 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=1.5, alpha=1)
+p2 <- p2 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.1) %>% filter(weight01_fisher>0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=1.5, alpha=1 )
+p2 <- p2 + geom_point(data=table.merge.filter %>% filter(regulation<0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*-1)), shape=25, stroke=2, alpha=1 )
+p2 <- p2 + geom_point(data=table.merge.filter  %>% filter(regulation>0) %>% filter(weight01_fisher<=0.01), aes(x=spp, y=Term, size=Significant, colour=(abs(log2(weight01_fisher))*1)), shape=24, stroke=2, alpha=1) 
+p2 <- p2 + scale_size(breaks = c(10,15,20,30,40,50,60,70,80,90,100,110,150), range = (c(1,10)))
+p2 <- p2 + scale_color_gradientn(colours = c(rev(brewer.pal(9,"Blues")),brewer.pal(9,"Reds")))
+p2 <- p2 + scale_x_discrete(limits = c("mxg","hybrid3n","msin","msac")) 
+p2 <- p2 + scale_y_discrete(limits=rev(c("serine family amino acid metabolic proce...",
+"reductive pentose-phosphate cycle",
+"cell surface receptor signaling pathway",
+"protein kinase activity",
+"sucrose metabolic process",
+"starch metabolic process",
+"polysaccharide catabolic process",
+"chlorophyll binding",
+"calcium ion binding",
+"protein serine/threonine kinase activity",
+"iron ion binding",
+"thylakoid membrane organization",
+"carbohydrate binding",
+"glycerol transport",
+"oxidation-reduction process",
+"carbon utilization",
+"cellular water homeostasis",
+"water channel activity",
+"glycerol channel activity",
+"glycolytic process",
+"polysaccharide binding",
+"cation binding",
+"carbohydrate transmembrane transport",
+"water transport",
+"chloroplast organization",
+"photosynthesis",
+"phosphorylation",
+"protein serine/threonine phosphatase act...",
+"mannose metabolic process",
+"identical protein binding",
+"RNA binding",
+"response to heat",
+"isopentenyl diphosphate biosynthetic pro...",
+"cysteine biosynthetic process",
+"abscisic acid-activated signaling pathwa...",
+"calmodulin binding",
+"defense response",
+"ribosome biogenesis",
+"dioxygenase activity",
+"ATPase activity, coupled to transmembran...",
+"structural constituent of ribosome",
+"translation",
+"pyruvate metabolic process",
+"nucleotide binding",
+"metal ion transport",
+"secondary metabolite biosynthetic proces...",
+"nucleotide-sugar metabolic process",
+"cellular aldehyde metabolic process",
+"protein folding",
+"protein dephosphorylation")))
+p2 + theme_linedraw()
+
+```
+
