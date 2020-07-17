@@ -286,7 +286,7 @@ require(DESeq2);require(ggplot2);require(dplyr);library(pheatmap);library(apeglm
 options(scipen=999) #disable scientific annotation
 
 #setwd("C:/Users/gari/Documents/Abel personal documents/water stress experiments Misc_2013/JoseDvega/Jose November 2019/abel_topgo") 
- setwd("~/analysis/susanne_RNASEQ_data/abel/abel20200511")
+ setwd("~/analysis/susanne_RNASEQ_data/miscanthus_drought_rnaseq/")
 #setwd("~/analysis/susanne_RNASEQ_data/abel")
 list$mxg.drought.UP <- as.integer(allgenes %in% rownames(mxg.drought[mxg.drought$log2FoldChange>0,])) 
 list$mxg.drought.DOWN <- as.integer(allgenes %in% rownames(mxg.drought[mxg.drought$log2FoldChange<0,])) 
