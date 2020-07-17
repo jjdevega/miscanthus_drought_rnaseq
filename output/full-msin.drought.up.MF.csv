@@ -1,0 +1,51 @@
+GO.ID,Term,Annotated,Significant,Expected,Rank in elim_fisher,weight_fisher,elim_fisher,weight01_fisher,genes
+GO:0004722,protein serine/threonine phosphatase act...,181,5,0.48,1,0.00013,0.00013,0.00013,Misin02G413800.v7.1|Misin03G141800.v7.1|Misin14G045600.v7.1|Misin17G216700.v7.1|Misin18G206400.v7.1
+GO:0047134,protein-disulfide reductase activity,9,2,0.02,2,0.00025,0.00025,0.00025,Misin05G300400.v7.1|Misin06G289700.v7.1
+GO:0000774,adenyl-nucleotide exchange factor activi...,13,2,0.03,3,0.00054,0.00054,0.00054,Misin07G405500.v7.1|Misin08G197500.v7.1
+GO:0043021,ribonucleoprotein complex binding,96,3,0.26,4,0.00218,0.00218,1.00000,Misin03G211800.v7.1|Misin08G325000.v7.1|Misin16G231000.v7.1
+GO:0016782,"transferase activity, transferring sulfu...",97,3,0.26,5,0.00225,0.00225,1.00000,Misin15G158500.v7.1|Misin16G239400.v7.1|Misin17G127100.v7.1
+GO:0042802,identical protein binding,237,4,0.63,94,0.00376,0.26726,0.26726,Misin07G405500.v7.1|Misin07G506800.v7.1|Misin08G197500.v7.1|Misin14G007100.v7.1
+GO:0061598,molybdopterin adenylyltransferase activi...,2,1,0.01,7,0.00532,0.00532,0.00532,Misin11G262800.v7.1
+GO:0061599,molybdopterin molybdotransferase activit...,2,1,0.01,8,0.00532,0.00532,0.00532,Misin11G262800.v7.1
+GO:0008830,"dTDP-4-dehydrorhamnose 3,5-epimerase act...",2,1,0.01,9,0.00532,0.00532,0.00532,Misin08G239900.v7.1
+GO:0004357,glutamate-cysteine ligase activity,2,1,0.01,10,0.00532,0.00532,0.00532,Misin16G041700.v7.1
+GO:0010490,UDP-4-keto-rhamnose-4-keto-reductase act...,2,1,0.01,11,0.00532,0.00532,0.00532,Misin08G239900.v7.1
+GO:0045504,dynein heavy chain binding,2,1,0.01,12,0.00532,0.00532,0.00532,Misin01G432100.v7.1
+GO:0008466,glycogenin glucosyltransferase activity,2,1,0.01,13,0.00532,0.00532,0.00532,Misin01G285400.v7.1
+GO:0010489,"UDP-4-keto-6-deoxy-glucose-3,5-epimerase...",2,1,0.01,14,0.00532,0.00532,0.00532,Misin08G239900.v7.1
+GO:0004147,dihydrolipoamide branched chain acyltran...,2,1,0.01,15,0.00532,0.00532,0.00532,Misin06G130100.v7.1
+GO:0008568,microtubule-severing ATPase activity,41,2,0.11,16,0.00538,0.00538,0.00538,Misin05G014900.v7.1|Misin06G004500.v7.1
+GO:0004350,glutamate-5-semialdehyde dehydrogenase a...,3,1,0.01,17,0.00797,0.00797,0.00797,Misin05G338300.v7.1
+GO:0046914,transition metal ion binding,3455,17,9.2,18,0.00917,0.00917,0.52081,Misin01G487900.v7.1|Misin03G014300.v7.1|Misin04G027900.v7.1|Misin06G130100.v7.1|Misin06G149100.v7.1|Misin07G066600.v7.1|Misin07G066700.v7.1|Misin07G405500.v7.1|Misin07G506800.v7.1|Misin08G197500.v7.1|Misin08G295000.v7.1|Misin11G208300.v7.1|Misin11G262800.v7.1|Misin12G035300.v7.1|Misin16G041700.v7.1|Misin16G239400.v7.1|Misin17G127100.v7.1
+GO:0009815,1-aminocyclopropane-1-carboxylate oxidas...,4,1,0.01,19,0.01061,0.01061,0.01061,Misin08G295000.v7.1
+GO:0043014,alpha-tubulin binding,4,1,0.01,20,0.01061,0.01061,0.01061,Misin01G432100.v7.1
+GO:0051087,chaperone binding,60,2,0.16,21,0.01124,0.01124,0.01124,Misin07G405500.v7.1|Misin08G197500.v7.1
+GO:0047427,cyanoalanine nitrilase activity,5,1,0.01,23,0.01325,0.01325,0.01325,Misin07G418600.v7.1
+GO:0080041,ADP-ribose pyrophosphohydrolase activity,5,1,0.01,24,0.01325,0.01325,0.01325,Misin01G126400.v7.1
+GO:0004349,glutamate 5-kinase activity,5,1,0.01,25,0.01325,0.01325,0.01325,Misin05G338300.v7.1
+GO:0004348,glucosylceramidase activity,6,1,0.02,28,0.01588,0.01588,0.01588,Misin10G068400.v7.1
+GO:0003977,UDP-N-acetylglucosamine diphosphorylase ...,8,1,0.02,32,0.02112,0.02112,0.02112,Misin16G231000.v7.1
+GO:0004615,phosphomannomutase activity,8,1,0.02,33,0.02112,0.02112,0.02112,Misin03G131100.v7.1
+GO:0004802,transketolase activity,8,1,0.02,34,0.02112,0.02112,0.02112,Misin11G031500.v7.1
+GO:0003883,CTP synthase activity,9,1,0.02,35,0.02373,0.02373,0.02373,Misin17G249200.v7.1
+GO:0030598,rRNA N-glycosylase activity,10,1,0.03,36,0.02633,0.02633,0.02633,Misin12G016000.v7.1
+GO:0004867,serine-type endopeptidase inhibitor acti...,104,2,0.28,38,0.03154,0.03154,0.03154,Misin17G013100.v7.1|Misin17G015000.v7.1
+GO:0052692,raffinose alpha-galactosidase activity,15,1,0.04,39,0.03923,0.03923,0.03923,Misin04G395100.v7.1
+GO:0019139,cytokinin dehydrogenase activity,16,1,0.04,41,0.04179,0.04179,0.04179,Misin05G397300.v7.1
+GO:0004066,asparagine synthase (glutamine-hydrolyzi...,18,1,0.05,42,0.04690,0.04690,0.04690,Misin14G007100.v7.1
+GO:0016157,sucrose synthase activity,19,1,0.05,43,0.04944,0.04944,0.04944,Misin01G358800.v7.1
+GO:0004471,malate dehydrogenase (decarboxylating) (...,20,1,0.05,48,0.05197,0.05197,0.05197,Misin06G234900.v7.1
+GO:0015288,porin activity,20,1,0.05,49,0.05197,0.05197,0.05197,Misin05G180600.v7.1
+GO:0016149,"translation release factor activity, cod...",26,1,0.07,56,0.06703,0.06703,0.06703,Misin08G325000.v7.1
+GO:0003843,"1,3-beta-D-glucan synthase activity",35,1,0.09,64,0.08919,0.08919,0.08919,Misin01G506200.v7.1
+GO:0008308,voltage-gated anion channel activity,40,1,0.11,67,0.10127,0.10127,0.10127,Misin05G180600.v7.1
+GO:0000049,tRNA binding,41,1,0.11,68,0.10366,0.10366,0.10366,Misin15G158500.v7.1
+GO:0020037,heme binding,802,4,2.14,79,0.16607,0.16607,0.16607,Misin01G487900.v7.1|Misin07G066600.v7.1|Misin07G066700.v7.1|Misin11G270000.v7.1
+GO:0051536,iron-sulfur cluster binding,278,2,0.74,80,0.16953,0.16953,0.19146,Misin01G126400.v7.1|Misin16G239400.v7.1
+GO:0003993,acid phosphatase activity,78,1,0.21,82,0.18805,0.18805,0.18805,Misin18G206400.v7.1
+GO:0043169,cation binding,6563,27,17.48,86,0.20235,0.21021,0.11074,Misin01G487900.v7.1|Misin02G413800.v7.1|Misin03G014300.v7.1|Misin03G141800.v7.1|Misin04G027900.v7.1|Misin04G162500.v7.1|Misin06G130100.v7.1|Misin06G149100.v7.1|Misin06G234900.v7.1|Misin07G066600.v7.1|Misin07G066700.v7.1|Misin07G405500.v7.1|Misin07G506800.v7.1|Misin08G197500.v7.1|Misin08G295000.v7.1|Misin11G208300.v7.1|Misin11G262800.v7.1|Misin11G270000.v7.1|Misin12G035300.v7.1|Misin14G045600.v7.1|Misin16G041700.v7.1|Misin16G079400.v7.1|Misin16G239400.v7.1|Misin17G127100.v7.1|Misin17G216700.v7.1|Misin18G206400.v7.1|MisinT322000.v7.1
+GO:0004650,polygalacturonase activity,87,1,0.23,84,0.20736,0.20736,0.20736,Misin01G020200.v7.1
+GO:0003729,mRNA binding,106,1,0.28,92,0.24664,0.24664,0.24664,MisinT567400.v7.1
+GO:0005355,glucose transmembrane transporter activi...,122,1,0.33,96,0.27823,0.27823,0.27823,MisinT147900.v7.1
+GO:0016709,"oxidoreductase activity, acting on paire...",404,2,1.08,101,0.29248,0.29248,0.29248,Misin07G066600.v7.1|Misin07G066700.v7.1
+GO:0051287,NAD binding,149,1,0.4,109,0.32858,0.32858,0.32858,Misin06G234900.v7.1
