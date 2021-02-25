@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/280480152.svg)](https://zenodo.org/badge/latestdoi/280480152)
+
 # Transcriptional differences among four Miscanthus species (M. sacchariflorus, M. sinensis, M. x giganteus, and a triploid M. sacchariflorus X M. sinensis) under three water regimes: control, waterlogging (saturated) and drought (low soil mousture).
 
 This repository contains the code of the RNA-seq analysis from our paper, which is available in X.
